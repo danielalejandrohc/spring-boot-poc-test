@@ -15,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jp.test.exceptions.BusinessException;
 import org.jp.test.interfaces.PATCH;
@@ -84,11 +85,14 @@ public class AccountRestService {
     @Path("account/{id}")
     @PATCH
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") String id, String accountJson) {
-        logger.log(Level.INFO, "update id: {0}, json request: {1}", new Object[]{id, accountJson});
+    public Response update(@PathParam("id") String id, String patch) {
+        logger.log(Level.INFO, "update id: {0}, json request: {1}", new Object[]{id, patch});
         try {
             //service.update(id, accountJson);
             ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(patch);
+            String operation = jsonNode.get("op").asText();
+            
 
             Response response = Response.status(200).entity("").build();
             return response;
