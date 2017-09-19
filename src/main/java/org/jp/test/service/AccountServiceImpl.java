@@ -16,7 +16,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.BindException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,6 +37,7 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * Reall the json file and convert it to an array of objects
+     *
      * @return
      * @throws IOException
      */
@@ -40,13 +45,40 @@ public class AccountServiceImpl implements AccountService {
     public List<Account> getAllAccount() throws IOException {
         String accountsJson = getAllAccountAsJSON();
         ObjectMapper objectMapper = new ObjectMapper();
-        List<Account> ret = objectMapper.readValue(accountsJson, new TypeReference<List<Account>>() {
-        });
+        List<Account> ret = null;
+        if(accountsJson == null || accountsJson.trim().isEmpty()) {
+            ret = new ArrayList<>();
+        } else {
+            ret = objectMapper.readValue(accountsJson, new TypeReference<List<Account>>() {
+            });
+        }
+
         return ret;
     }
 
     /**
+     * Retrieves from the accounts the first occurs of 'custonerName' provided  
+     * @param customerName
+     * @return
+     * @throws IOException 
+     */
+    public Account findAccountByName(String customerName) throws IOException, BusinessException {
+        List<Account> allAccount = getAllAccount();
+
+        Optional<Account> firstAccount = allAccount.stream()
+                .filter(acc -> acc.getCustomerName().equals(customerName))
+                .findFirst();
+
+        if (firstAccount.isPresent()) {
+            return firstAccount.get();
+        } else {
+            throw new BusinessException(customerName + " not found");
+        }
+    }
+
+    /**
      * Retrieve the first account found it base on the customerName
+     *
      * @param name
      * @return
      * @throws IOException
@@ -65,20 +97,24 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * Retrieves the Accotuns JSON file as it is
+     *
      * @return
      * @throws IOException
      */
     @Override
     public String getAllAccountAsJSON() throws IOException {
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        // Getting resource(File) from class loader
-        java.nio.file.Path path = new File(classLoader.getResource(JerseyConfiguration.ACCOUNT_FILE).getFile()).toPath();
-        String content = new String(Files.readAllBytes(path));
+        java.nio.file.Path path = Paths.get(System.getProperty("java.io.tmpdir") + "/accounts.json");//new File(classLoader.getResource(JerseyConfiguration.ACCOUNT_FILE).getFile()).toPath();
+        String content = null;
+        if(path.toFile().exists()) {
+            content = new String(Files.readAllBytes(path));
+        }
         return content;
     }
 
     /**
-     * Pase the accounts JSON file to a list of objects then add the new object to the list and write the list to the file
+     * Pase the accounts JSON file to a list of objects then add the new object
+     * to the list and write the list to the file
+     *
      * @param jsonAccount
      * @throws IOException
      */
@@ -93,7 +129,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * Base on an CustomerName (Id) it updates all the matches with that customerName with the new account info
+     * Base on an CustomerName (Id) it updates all the matches with that
+     * customerName with the new account info
+     *
      * @param id
      * @param jsonAccount
      * @throws IOException
@@ -113,6 +151,7 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * Find a customerName contained in the JSON file and then update the object
+     *
      * @param jsonAccount
      * @throws IOException
      * @throws BusinessException
@@ -125,7 +164,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * Fin the Account in the List and update it with new info, if it is not present then throw an Exception
+     * Fin the Account in the List and update it with new info, if it is not
+     * present then throw an Exception
+     *
      * @param account
      * @throws IOException
      * @throws BusinessException
@@ -146,10 +187,13 @@ public class AccountServiceImpl implements AccountService {
         if (atomicInteger.get() == 0) {
             throw new BusinessException("Account " + account + " not found");
         }
+
+        submitToFile(allAccount);
     }
 
     /**
      * Overwrite a file with List of accouns provided
+     *
      * @param accounts
      * @throws IOException
      */
@@ -158,7 +202,8 @@ public class AccountServiceImpl implements AccountService {
         // To prettify the output json file
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         ClassLoader classLoader = this.getClass().getClassLoader();
-        File file = new File(classLoader.getResource(JerseyConfiguration.ACCOUNT_FILE).getFile());
+        Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + "/accounts.json");
+        File file = tempPath.toFile();//new File(classLoader.getResource(JerseyConfiguration.ACCOUNT_FILE).getFile());
         objectMapper.writeValue(file, accounts);
         logger.log(Level.INFO, "File created/updated {0} @ {1}", new Object[]{accounts, file.toString()});
     }

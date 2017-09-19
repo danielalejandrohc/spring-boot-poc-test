@@ -17,26 +17,33 @@ import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.lang.reflect.Method;
 import org.jp.test.exceptions.BusinessException;
 import org.jp.test.interfaces.PATCH;
 import org.jp.test.model.Account;
+import org.jp.test.service.AccountPatchService;
+import org.jp.test.service.AccountPatchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.jp.test.service.AccountService;
 
 import java.util.logging.Logger;
+import org.jp.test.config.JerseyConfiguration;
 
 /**
  * @author daniel.hernandez01
  */
 @Component
-@Path("/v1")
+@Path("/v1/accounts")
 public class AccountRestService {
 
     private final Logger logger = Logger.getLogger(AccountRestService.class.getName());
 
     @Autowired
     private AccountService service;
+
+    @Autowired
+    private AccountPatchService patchService;
 
     /*
         /v1/accounts/account/account_id      // to get details of an account, GET
@@ -47,11 +54,11 @@ public class AccountRestService {
     public Response getDetails(@PathParam("id") String id) {
         try {
             Account account = service.getAccountByName(id);
-            Response response = Response.status(200).entity(account).build();
+            Response response = Response.status(JerseyConfiguration.SUCCESS_REPONSE).entity(account).build();
             return response;
         } catch (IOException | BusinessException ex) {
             logger.log(Level.SEVERE, null, ex);
-            Response response = Response.status(500).entity(ex).build();
+            Response response = Response.status(JerseyConfiguration.ERROR_REPONSE).entity(ex).build();
             return response;
         }
     }
@@ -66,11 +73,12 @@ public class AccountRestService {
         try {
             logger.log(Level.INFO, "create {0}", accountJson);
             service.create(accountJson);
-            Response response = Response.status(200).entity("").build();
+            Response response = Response.status(JerseyConfiguration.SUCCESS_REPONSE).entity(JerseyConfiguration.OK_JSON_RESPONSE).build();
+            logger.log(Level.INFO, "acc. created");
             return response;
         } catch (IOException ex) {
             logger.log(Level.SEVERE, null, ex);
-            Response response = Response.status(500).entity(ex).build();
+            Response response = Response.status(JerseyConfiguration.ERROR_REPONSE).entity(ex).build();
             return response;
         }
     }
@@ -88,21 +96,18 @@ public class AccountRestService {
     public Response update(@PathParam("id") String id, String patch) {
         logger.log(Level.INFO, "update id: {0}, json request: {1}", new Object[]{id, patch});
         try {
-            //service.update(id, accountJson);
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(patch);
-            String operation = jsonNode.get("op").asText();
-            
-
-            Response response = Response.status(200).entity("").build();
+            logger.log(Level.INFO, "update using patch");
+            patchService.applyUpdatePatch(id, patch);
+            Response response = Response.status(JerseyConfiguration.SUCCESS_REPONSE).entity(JerseyConfiguration.OK_JSON_RESPONSE).build();
             return response;
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger(AccountRestService.class.getName()).log(Level.SEVERE, null, ex);
-            Response response = Response.status(500).entity(ex).build();
+            Response response = Response.status(JerseyConfiguration.ERROR_REPONSE).entity(ex).build();
             return response;
         }
     }
 
+    
     /*
         /v1/accounts/account         // list all the account, GET
      */
@@ -112,11 +117,11 @@ public class AccountRestService {
     public Response listAll() {
         try {
             String accounts = service.getAllAccountAsJSON();
-            Response response = Response.status(200).entity(accounts).build();
+            Response response = Response.status(JerseyConfiguration.SUCCESS_REPONSE).entity(accounts).build();
             return response;
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(AccountRestService.class.getName()).log(Level.SEVERE, null, ex);
-            Response response = Response.status(500).entity(ex).build();
+            Response response = Response.status(JerseyConfiguration.ERROR_REPONSE).entity(ex).build();
             return response;
         }
     }

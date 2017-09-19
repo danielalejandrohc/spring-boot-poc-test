@@ -11,18 +11,18 @@ package org.jp.test.model;
  */
 public class Account {
     
-    private double amount;
+    private String amount;
     private String currency;
     private String customerName;
 
     public Account() {
     }
 
-    public double getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(String amount) {
         this.amount = amount;
     }
 

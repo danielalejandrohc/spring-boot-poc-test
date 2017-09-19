@@ -22,4 +22,5 @@ public interface AccountService {
     public void update(String jsonAccount) throws IOException, BusinessException;
     public void update(Account account) throws IOException, BusinessException;
     public void update(String id, String jsonAccount) throws IOException, BusinessException ;
+    public Account findAccountByName(String customerName) throws IOException, BusinessException;
 }
