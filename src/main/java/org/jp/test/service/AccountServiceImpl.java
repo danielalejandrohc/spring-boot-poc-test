@@ -8,7 +8,6 @@ package org.jp.test.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.jp.test.config.JerseyConfiguration;
 import org.jp.test.exceptions.BusinessException;
 import org.jp.test.model.Account;
 import org.jp.test.rest.v1.accounts.AccountRestService;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.BindException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

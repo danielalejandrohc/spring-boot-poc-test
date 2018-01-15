@@ -15,14 +15,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.lang.reflect.Method;
 import org.jp.test.exceptions.BusinessException;
 import org.jp.test.interfaces.PATCH;
 import org.jp.test.model.Account;
 import org.jp.test.service.AccountPatchService;
-import org.jp.test.service.AccountPatchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.jp.test.service.AccountService;
