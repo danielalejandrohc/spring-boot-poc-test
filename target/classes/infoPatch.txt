@@ -1,0 +1,34 @@
+JSON Patch
+JSON Patch is part of RFC 6902. It is a standard designed to allow performing
+operations on JSON documents. JSON Patch can work with the HTTP PATCH
+method. It is useful to provide partial updates to JSON documents. The media type
+"application/json-patch+json" is used to identify such patch documents.
+It takes the following members:
+• op: This identifies the operation to be performed on the document.
+The acceptable values are "add", "replace", "move", "remove",
+"copy", or "test". Any other value is an error.
+• path: This is the JSON pointer that represents the location in the
+JSON document.
+• value: This denotes the value to be replaced in the JSON document.
+The move operation takes a "from" member, which identifies the location in the
+target document to move the value from.
+Here is an example of a JSON Patch document sent in a HTTP PATCH request:
+PATCH /coffee/orders/1234 HTTP/1.1
+Host: api.foo.com
+Content-Length: 100
+Content-Type: application/json-patch
+[
+ {"op":"replace", "path": "/status", "value": "COMPLETED"}
+]
+www.it-ebooks.info
+Chapter 4
+[ 77 ]
+The preceding request shows how JSON Patch can be used to replace the status of
+a coffee order identified by resource coffee/orders/1234 .The operation, that is,
+"op" in the preceding snippet, is "replace", which sets the value "COMPLETED" to
+the status object in the JSON representation.
+The JSON Patch is very useful for single-page applications, real-time collaboration,
+offline data changes, and can also be used in applications that need to make small
+updates in large documents. For more details, check http://jsonpatchjs.com/,
+which is an implementation of JSON Patch.(RFC 6902) and JSON Pointer.(RFC
+6901) under the MIT License.
