@@ -41,6 +41,14 @@ public class AccountRestService {
     @Autowired
     private AccountPatchService patchService;
 
+    @Path("hello")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response sayHello() {
+        Response response = Response.status(JerseyConfiguration.SUCCESS_REPONSE).entity("hello !").build();
+        return response;
+    }
+
     /*
         /v1/accounts/account/account_id      // to get details of an account, GET
      */
@@ -103,7 +111,6 @@ public class AccountRestService {
         }
     }
 
-    
     /*
         /v1/accounts/account         // list all the account, GET
      */
