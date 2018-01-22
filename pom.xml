@@ -74,7 +74,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <repository>spring-boot-test</repository>
+                    <repository>${envP}-spring-boot-test</repository>
                     <buildArgs>
                         <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
                     </buildArgs>
