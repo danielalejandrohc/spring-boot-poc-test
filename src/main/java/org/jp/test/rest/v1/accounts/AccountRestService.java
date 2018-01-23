@@ -45,7 +45,7 @@ public class AccountRestService {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response sayHello() {
-        Response response = Response.status(JerseyConfiguration.SUCCESS_REPONSE).entity("hello !").build();
+        Response response = Response.status(JerseyConfiguration.SUCCESS_REPONSE).entity("hello !!!!! :)").build();
         return response;
     }
 
