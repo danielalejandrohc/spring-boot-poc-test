@@ -4,6 +4,9 @@
     <groupId>org.jp.test</groupId>
     <artifactId>spring-boot-test</artifactId>
     <version>1.0</version>
+    <build>
+       <finalName>spring-boot-test</finalName>
+    </build>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
